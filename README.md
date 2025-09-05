@@ -35,7 +35,7 @@ Preparada para correr tanto en desarrollo como en producción usando **Docker Co
 
 ### 1. Ejemplo de modelo
 
-```bash
+```js
 module.exports = (sequelize, DataTypes) => {
     const Users = sequelize.define("Users", {
       id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
@@ -57,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
 ```
 ### 2. Ejemplo de controlador
 
-```bash
+```js
 const service = require("./auth.service");
 
 async function getUsers(req, res) {
@@ -118,7 +118,7 @@ module.exports = { getUsers, getUser, createUser, updateUser, deleteUser };
 
 ### 3. Ejemplo de servicio
 
-```bash
+```js
 const { Users } = require("../../models/index");
 
 async function getAll() {
@@ -148,7 +148,7 @@ module.exports = { getAll, getById, create, update, remove };
 
 ### 4. Ejemplo de Rutas
 
-```bash
+```js
 const express = require("express");
 const controller = require("./auth.controller");
 
@@ -183,8 +183,8 @@ DOCKER_PORT=3700
 DOCKER_COMMAND=npx nodemon --legacy-watch app.js
 ```
 
-### 2. Ejecutar en producción
-Para ejecutar en producción, se debe usar el script `run-api-prod.sh`. para correr en la vps se debe usar el workflow de github actions. Se debe crear un secret en github actions con el nombre de `VPS_USER`, `VPS_HOST`, `VPS_SSH_KEY` y el valor de la llave privada de la vps.
+### 2. Acciones de github
+Se debe crear *environment*: prod y *secret* en github actions con el nombre de `VPS_USER`, `VPS_HOST`, `VPS_SSH_KEY` y el valor de la llave privada de la vps.
 
 ```bash
 name: Deploy API App
