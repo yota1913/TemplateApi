@@ -49,13 +49,36 @@ DOCKER_PORT=3700
 DOCKER_COMMAND=npx nodemon --legacy-watch app.js
 ```
 
-### 2. Ejecutar en desarrollo
+### 2. Ejemplo de modelo
+
+```bash
+module.exports = (sequelize, DataTypes) => {
+    const Users = sequelize.define("Users", {
+      id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+      name: { type: DataTypes.STRING, allowNull: false },
+      email: { type: DataTypes.STRING, unique: true, allowNull: false },
+      createdAt: { type: DataTypes.DATE, allowNull: false,field: 'created_at' },
+      updatedAt: { type: DataTypes.DATE, allowNull: false,field: 'updated_at' },
+    },
+    {
+      timestamps: true,
+      tableName: 'users',
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt',
+    }
+  );
+  
+    return Users;
+  };
+```
+
+### 3. Ejecutar en desarrollo
 
 ```bash
 docker-compose up --build
 ```
 
-### 3. Ejecutar en producción
+### 4. Ejecutar en producción
 Para ejecutar en producción, se debe usar el script `run-api-prod.sh`. para correr en la vps se debe usar el workflow de github actions. Se debe crear un secret en github actions con el nombre de `VPS_USER`, `VPS_HOST`, `VPS_SSH_KEY` y el valor de la llave privada de la vps.
 
 ```bash
