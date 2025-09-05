@@ -1,0 +1,21 @@
+services:
+  template-api:
+    build: 
+        context: .
+        dockerfile: ${DOCKER_FILE}
+    image: ${DOCKER_IMAGE}
+    networks:
+      - "${DOCKER_NETWORKS}"
+    restart: unless-stopped
+    container_name: ${DOCKER_CONTAINER_NAME}
+    env_file: 
+    - .env
+    ports:
+      - "${DOCKER_PORT}:${DOCKER_PORT}"
+    volumes:
+      - .:/usr/src
+      - /usr/src/node_modules
+    command: ${DOCKER_COMMAND}
+networks:
+  template-api-net:
+    name: "template-api-net"
