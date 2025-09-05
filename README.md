@@ -7,6 +7,8 @@ Preparada para correr tanto en desarrollo como en producción usando **Docker Co
 
 ## 📂 Estructura del proyecto
 
+```bash
+
 ├── conection/ # Configuración de conexión con la DB
 │ └── database.js
 ├── models/ # Inicialización de Sequelize y carga de modelos
@@ -25,7 +27,7 @@ Preparada para correr tanto en desarrollo como en producción usando **Docker Co
 ├── .env.prod # Variables de entorno para producción
 ├── run-api-prod.sh # Script para despliegue en producción
 └── app.js # Punto de entrada de la aplicación
-
+```
 
 ---
 
