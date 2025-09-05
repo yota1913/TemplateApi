@@ -163,7 +163,7 @@ router.delete("/:id", controller.deleteUser);
 module.exports = router;
 ```
 
---
+---
 
 ## ⚙️ Configuración
 
