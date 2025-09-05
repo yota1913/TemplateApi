@@ -31,25 +31,9 @@ Preparada para correr tanto en desarrollo como en producción usando **Docker Co
 
 ---
 
-## ⚙️ Configuración
+## 📝 Ejemplos Modelo, Controlador, Servicio y Ruta
 
-### 1. Variables de entorno `.env`
-
-Ejemplo para **desarrollo**:
-
-```env
-DB_URL=mysql://tuUsuario:tuClave@tuHost:tuPuerto/tuBaseDeDatos
-
-DOCKER_APP=template-api
-DOCKER_FILE=Dockerfile
-DOCKER_IMAGE=${DOCKER_APP}-image
-DOCKER_CONTAINER_NAME=${DOCKER_APP}-container
-DOCKER_NETWORKS=${DOCKER_APP}-net
-DOCKER_PORT=3700
-DOCKER_COMMAND=npx nodemon --legacy-watch app.js
-```
-
-### 2. Ejemplo de modelo
+### 1. Ejemplo de modelo
 
 ```bash
 module.exports = (sequelize, DataTypes) => {
@@ -71,14 +55,135 @@ module.exports = (sequelize, DataTypes) => {
     return Users;
   };
 ```
-
-### 3. Ejecutar en desarrollo
+### 2. Ejemplo de controlador
 
 ```bash
-docker-compose up --build
+const service = require("./auth.service");
+
+async function getUsers(req, res) {
+  try {
+    res.json(await service.getAll());
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener usuarios" });
+  }
+}
+
+async function getUser(req, res) {
+  try {
+    const user = await service.getById(req.params.id);
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener usuario" });
+  }
+}
+
+async function createUser(req, res) {
+  try {
+    const user = await service.create(req.body);
+    res.status(201).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al crear usuario" });
+  }
+}
+
+async function updateUser(req, res) {
+  try {
+    const user = await service.update(req.params.id, req.body);
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar usuario" });
+  }
+}
+
+async function deleteUser(req, res) {
+  try {
+    const deleted = await service.remove(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Usuario no encontrado" });
+    res.json({ message: "Usuario eliminado" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al eliminar usuario" });
+  }
+}
+
+module.exports = { getUsers, getUser, createUser, updateUser, deleteUser };
+
 ```
 
-### 4. Ejecutar en producción
+### 3. Ejemplo de servicio
+
+```bash
+const { Users } = require("../../models/index");
+
+async function getAll() {
+  return await Users.findAll();
+}
+
+async function getById(id) {
+  return await Users.findByPk(id);
+}
+
+async function create(data) {
+  return await User.create(data);
+}
+
+async function update(id, data) {
+  const user = await User.findByPk(id);
+  return user ? await user.update(data) : null;
+}
+
+async function remove(id) {
+  const user = await User.findByPk(id);
+  return user ? await user.destroy() : null;
+}
+
+module.exports = { getAll, getById, create, update, remove };
+```
+
+### 4. Ejemplo de Rutas
+
+```bash
+const express = require("express");
+const controller = require("./auth.controller");
+
+const router = express.Router();
+
+router.get("/", controller.getUsers);
+router.get("/:id", controller.getUser);
+router.post("/", controller.createUser);
+router.put("/:id", controller.updateUser);
+router.delete("/:id", controller.deleteUser);
+
+module.exports = router;
+```
+
+--
+
+## ⚙️ Configuración
+
+### 1. Variables de entorno `.env`
+
+Ejemplo para **desarrollo**:
+
+```env
+DB_URL=mysql://tuUsuario:tuClave@tuHost:tuPuerto/tuBaseDeDatos
+
+DOCKER_APP=template-api
+DOCKER_FILE=Dockerfile
+DOCKER_IMAGE=${DOCKER_APP}-image
+DOCKER_CONTAINER_NAME=${DOCKER_APP}-container
+DOCKER_NETWORKS=${DOCKER_APP}-net
+DOCKER_PORT=3700
+DOCKER_COMMAND=npx nodemon --legacy-watch app.js
+```
+
+### 2. Ejecutar en producción
 Para ejecutar en producción, se debe usar el script `run-api-prod.sh`. para correr en la vps se debe usar el workflow de github actions. Se debe crear un secret en github actions con el nombre de `VPS_USER`, `VPS_HOST`, `VPS_SSH_KEY` y el valor de la llave privada de la vps.
 
 ```bash
@@ -115,6 +220,16 @@ jobs:
             git reset --hard origin/master
             chmod +x ./run-api-prod.sh
             ./run-api-prod.sh
+```
+
+---
+
+## Desarrollo
+
+### Ejecutar en desarrollo
+
+```bash
+docker-compose up --build
 ```
 
 
