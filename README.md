@@ -47,9 +47,49 @@ DOCKER_PORT=3700
 DOCKER_COMMAND=npx nodemon --legacy-watch app.js
 ```
 
-#Para desarrollo
+### 2. Ejecutar en desarrollo
 
 ```bash
 docker-compose up --build
 ```
+
+### 3. Ejecutar en producción
+Para ejecutar en producción, se debe usar el script `run-api-prod.sh`. para correr en la vps se debe usar el workflow de github actions. Se debe crear un secret en github actions con el nombre de `VPS_USER`, `VPS_HOST`, `VPS_SSH_KEY` y el valor de la llave privada de la vps.
+
+```bash
+name: Deploy API App
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22222
+          command_timeout: 20m
+          script: |
+            cd ruta/del/proyecto 
+            git fetch origin master --force
+            echo "✅ Cambios detectados en master"
+            git checkout master
+            git reset --hard origin/master
+            chmod +x ./run-api-prod.sh
+            ./run-api-prod.sh
+```
+
 
